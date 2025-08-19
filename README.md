@@ -1,6 +1,7 @@
 Scripts for statistics and plotting figures in "Aquatic moss precipitates metals in the presence of a specific endophytic microbiome", reviewed in iMetaOmics 2025.
-data #metadata and biom-files
-script # R script for statistical analysis and creating figures
+
+- data #metadata and biom-files
+- script # R script for statistical analysis and creating figures
 
 If you use these scripts, please cite the paper below:
 
