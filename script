@@ -1,0 +1,215 @@
+################################################################################
+# Aquatic moss precipitates metals in the presence of a specific endophytic microbiome
+#
+# STEPWISE SCRIPT FOR MOSS-MICROBE-METAL INTERACTIONS ANALYSIS
+# Author: Kaisa Lehosmaa
+# Repository: https://github.com/Lehosmaa/Moss-microbe-metal-interactions
+################################################################################
+
+#### 1. LOAD REQUIRED PACKAGES ####
+# If not installed, install with: install.packages("<package>")
+library(tidyverse)
+library(phyloseq)
+library(microbiome)
+library(RColorBrewer)
+library(ggpubr)
+library(DT)
+library(data.table)
+library(dplyr)
+library(DESeq2)
+library(remotes)
+library(magrittr)
+library(vegan)
+library(ggplot2)
+library(scales)
+library(grid)
+library(car)
+library(microeco)
+library(file2meco)
+
+################################################################################
+#### 2. IMPORT AND FORMAT PHYLOSEQ OBJECTS ####
+# Each block (bacteriome, mycobiome, fungal endophytes) can be run independently
+################################################################################
+
+##### 2A. Bacteriome #####
+# Provide correct biom file and mapping file names
+biom_file_bact <- "bateriome"
+map_file_bact <- "metadata_epihytes.txt"
+
+bact_biom <- import_biom(biom_file_bact)
+bact_map <- import_qiime_sample_data(map_file_bact)
+
+bacteria <- merge_phyloseq(bact_biom, bact_map)
+colnames(tax_table(bacteria)) <- c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
+
+# Get top 10 abundant taxa
+TopNOTUs_bact <- names(sort(taxa_sums(bacteria), TRUE)[1:10])
+print(TopNOTUs_bact)
+
+# CLR transform for compositional analysis
+bacteria_clr <- microbiome::transform(bacteria, "clr")
+
+# Convert to microeco object
+meco_bact <- phyloseq2meco(bacteria)
+dataset_bact <- meco_bact
+dataset_bact$tidy_dataset()
+print(dataset_bact)
+
+##### 2B. Mycobiome #####
+biom_file_myco <- "mycobiome.biom"
+map_file_myco <- "metadata_epihytes.txt"
+
+myco_biom <- import_biom(biom_file_myco)
+myco_map <- import_qiime_sample_data(map_file_myco)
+
+mycobiome <- merge_phyloseq(myco_biom, myco_map)
+colnames(tax_table(mycobiome)) <- c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
+TopNOTUs_myco <- names(sort(taxa_sums(mycobiome), TRUE)[1:10])
+print(TopNOTUs_myco)
+
+mycobiome_clr <- microbiome::transform(mycobiome, "clr")
+meco_myco <- phyloseq2meco(mycobiome)
+dataset_myco <- meco_myco
+dataset_myco$tidy_dataset()
+print(dataset_myco)
+
+##### 2C. Fungal Endophytes #####
+biom_file_endo <- "fungal endophytes.biom"
+map_file_endo <- "metadata_endophytes.txt"
+
+endo_biom <- import_biom(biom_file_endo)
+endo_map <- import_qiime_sample_data(map_file_endo)
+
+endophytes <- merge_phyloseq(endo_biom, endo_map)
+colnames(tax_table(endophytes)) <- c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
+endophytes_clr <- microbiome::transform(endophytes, "clr")
+meco_endo <- phyloseq2meco(endophytes)
+dataset_endo <- meco_endo
+dataset_endo$tidy_dataset()
+print(dataset_endo)
+
+################################################################################
+#### 3. ALPHA DIVERSITY ANALYSIS ####
+# Calculate observed richness and test significance between sites
+################################################################################
+
+# Helper function for alpha diversity and tests
+run_alpha_div <- function(physeq_obj, group_var = "site") {
+  div <- microbiome::alpha(physeq_obj, index="Observed")
+  meta <- meta(physeq_obj)
+  meta$sam_name <- rownames(meta)
+  div$sam_name <- rownames(div)
+  div_df <- merge(div, meta, by = "sam_name")
+  print(colnames(div_df))
+  print(leveneTest(observed ~ get(group_var), data = div_df))
+  rich <- estimate_richness(physeq_obj)
+  print(pairwise.wilcox.test(rich$Observed, sample_data(physeq_obj)[[group_var]]))
+  return(div_df)
+}
+
+div_df_bact <- run_alpha_div(bacteria)
+div_df_myco <- run_alpha_div(mycobiome)
+div_df_endo <- run_alpha_div(endophytes)
+
+################################################################################
+#### 4. ALPHA DIVERSITY BOXPLOTS ####
+################################################################################
+
+# Boxplot function
+plot_alpha_box <- function(div_df, x_var = "site", y_var = "observed", fill_var = "Treatment",
+                           order_vals, title, legend_vals, palette_vals, ylab_val = "") {
+  p <- ggboxplot(div_df, x = x_var, y = y_var, fill = fill_var,
+                 palette = palette_vals, order = order_vals,
+                 ylab = ylab_val, title = title, legend = "none") +
+    theme(axis.text.x = element_text(angle = 360, vjust=0.5, hjust = 1))
+  print(p)
+}
+
+plot_alpha_box(div_df_bact, order_vals = c("control", "mine A", "mine C-78", "mine C-96"),
+               title = "a) Bacteriome", legend_vals = "none",
+               palette_vals = c("#1B9E77", "#D95F02", "#A6761D", "#666666","#E6AB02"),
+               ylab_val = "Total ESV richness")
+
+plot_alpha_box(div_df_myco, order_vals = c("control", "mine A", "mine C-78", "mine C-96"),
+               title = "b) Mycobiome", legend_vals = "none",
+               palette_vals = c("#1B9E77", "#D95F02", "#A6761D", "#666666","#E6AB02"))
+
+plot_alpha_box(div_df_endo, order_vals = c("control", "mine A", "mine C-78"),
+               title = "c) Fungal endophytes", legend_vals = "none",
+               palette_vals = c("#1B9E77", "#D95F02", "#A6761D", "#666666"))
+
+################################################################################
+#### 5. BETA DIVERSITY AND PERMANOVA ####
+################################################################################
+
+run_beta_permanova <- function(clr_obj, group_var = "site") {
+  dist_matrix <- phyloseq::distance(clr_obj, method = "euclidean")
+  print(vegan::adonis2(dist_matrix ~ phyloseq::sample_data(clr_obj)[[group_var]]))
+}
+
+run_beta_permanova(bacteria_clr)
+run_beta_permanova(mycobiome_clr)
+run_beta_permanova(endophytes_clr)
+
+# Pairwise PERMANOVA
+# Example for bacteriome: control vs mine A
+bact_pair <- subset_samples(bacteria_clr, site %in% c("control", "mine A"))
+run_beta_permanova(bact_pair)
+
+################################################################################
+#### 6. ORDINATION PLOTS (PCoA) ####
+################################################################################
+
+# Helper function for ordination plot
+plot_pcoa <- function(clr_obj, title_val) {
+  ord <- ordinate(clr_obj, method="PCoA", distance="euclidean")
+  plot_ordination(clr_obj, ord, color="site", title=title_val) +
+    theme(aspect.ratio=1) +
+    stat_ellipse(type = "norm", linetype = 1) +
+    theme_classic()
+}
+
+plot_pcoa(bacteria_clr, "a)")
+plot_pcoa(mycobiome_clr, "b)")
+plot_pcoa(endophytes_clr, "c)")
+
+################################################################################
+#### 7. TAXA ABUNDANCE AND FREQUENCY PLOTS ####
+################################################################################
+
+# Bacteriome Example
+t_abund_bact <- trans_abund$new(dataset = dataset_bact, taxrank = "Phylum", ntaxa = 10, groupmean = "site")
+g_abund_bact <- t_abund_bact$plot_bar(others_color = "grey70", legend_text_italic = FALSE)
+g_abund_bact + theme_classic() + theme(axis.title.y = element_text(size = 18))
+
+################################################################################
+#### 8. DIFFERENTIAL ABUNDANCE ANALYSIS (DESeq2) ####
+################################################################################
+
+# Helper function for DESeq2 analysis
+run_deseq2 <- function(physeq_obj, group_var = "site", alpha = 0.05) {
+  phyloseq::sample_data(physeq_obj)[[group_var]] <- as.factor(phyloseq::sample_data(physeq_obj)[[group_var]])
+  cds <- phyloseq_to_deseq2(physeq_obj, as.formula(paste("~", group_var)))
+  dds <- DESeq2::DESeq(cds, sfType = "poscounts")
+  vsd <- varianceStabilizingTransformation(dds, blind = TRUE, fitType = "parametric")
+  plotPCA(vsd, intgroup = group_var)
+  res <- results(dds, cooksCutoff = FALSE)
+  sigtab <- res[which(res$padj < alpha), ]
+  if (nrow(sigtab) > 0) {
+    sigtab <- cbind(as(sigtab, "data.frame"), as(tax_table(physeq_obj)[rownames(sigtab), ], "matrix"))
+    print(head(sigtab))
+    print(dim(sigtab))
+  } else {
+    print("No significant taxa found at selected alpha level.")
+  }
+}
+
+# Run DESeq2 for each dataset
+run_deseq2(bacteria)
+run_deseq2(mycobiome)
+run_deseq2(endophytes)
+
+################################################################################
+# END OF SCRIPT
+################################################################################
