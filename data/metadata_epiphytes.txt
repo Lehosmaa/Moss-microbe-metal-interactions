@@ -1,0 +1,31 @@
+#SampleID	plantpart	site	Treatment	Cd	Cu	Pb	Zn	Ni	As	Si	state
+4P-EPI	epiphyte	mine A	mine	5,3	81,97	44,11	131,4	85,37	473,85	4,97	active
+5P-EPI	epiphyte	mine A	mine	5,3	81,97	44,11	131,4	85,37	473,85	4,97	active
+6P-EPI	epiphyte	mine A	mine	5,3	81,97	44,11	131,4	85,37	473,85	4,97	active
+7SWE-EPI	epiphyte	mine C-78	mine	3,27	55,62	53,43	83,03	41,68	179,52	5,07	active
+8SWE-EPI	epiphyte	mine C-78	mine	3,27	55,62	53,43	83,03	41,68	179,52	5,07	active
+9SWE-EPI	epiphyte	mine C-78	mine	3,27	55,62	53,43	83,03	41,68	179,52	5,07	active
+10S-EPI	epiphyte	mine C-96	mine	6,17	69,18	63,86	160,64	87,71	691,39	5,07	passive
+11S-EPI	epiphyte	mine C-96	mine	6,17	69,18	63,86	160,64	87,71	691,39	5,07	passive
+12S-EPI	epiphyte	mine C-96	mine	6,17	69,18	63,86	160,64	87,71	691,39	5,07	passive
+13CK-EPI	epiphyte	control	control	3,19	42,77	56,7	96,56	63,9	191,15	4,86	control
+14CK-EPI	epiphyte	control	control	3,19	42,77	56,7	96,56	63,9	191,15	4,86	control
+15CK-EPI	epiphyte	control	control	3,19	42,77	56,7	96,56	63,9	191,15	4,86	control
+16SWE-EPI	epiphyte	mine C-78	mine	3,27	55,62	53,43	83,03	41,68	179,52	5,07	active
+17SWE-EPI	epiphyte	mine C-78	mine	3,27	55,62	53,43	83,03	41,68	179,52	5,07	active
+18SWE-EPI	epiphyte	mine C-78	mine	3,27	55,62	53,43	83,03	41,68	179,52	5,07	active
+40SWE-EPI	epiphyte	mine C-78	mine	3,27	55,62	53,43	83,03	41,68	179,52	5,07	active
+41SWE-EPI	epiphyte	mine C-78	mine	3,27	55,62	53,43	83,03	41,68	179,52	5,07	active
+42SWE-EPI	epiphyte	mine C-78	mine	3,27	55,62	53,43	83,03	41,68	179,52	5,07	active
+43C19-EPI	epiphyte	control	control	5,51	53,54	46,09	122,83	85,47	439,38	4,85	control
+44C19-EPI	epiphyte	control	control	5,51	53,54	46,09	122,83	85,47	439,38	4,85	control
+45C19-EPI	epiphyte	control	control	5,51	53,54	46,09	122,83	85,47	439,38	4,85	control
+46P-EPI	epiphyte	mine A	mine	5,3	81,97	44,11	131,4	85,37	473,85	4,97	active
+47P-EPI	epiphyte	mine A	mine	5,3	81,97	44,11	131,4	85,37	473,85	4,97	active
+48P-EPI	epiphyte	mine A	mine	5,3	81,97	44,11	131,4	85,37	473,85	4,97	active
+64C19-EPI	epiphyte	control	control	5,51	53,54	46,09	122,83	85,47	439,38	4,85	control
+65C19-EPI	epiphyte	control	control	5,51	53,54	46,09	122,83	85,47	439,38	4,85	control
+66C19-EPI	epiphyte	control	control	5,51	53,54	46,09	122,83	85,47	439,38	4,85	control
+61P-EPI	epiphyte	mine A	mine	5,3	81,97	44,11	131,4	85,37	473,85	4,97	active
+62P-EPI	epiphyte	mine A	mine	5,3	81,97	44,11	131,4	85,37	473,85	4,97	active
+63P-EPI	epiphyte	mine A	mine	5,3	81,97	44,11	131,4	85,37	473,85	4,97	active
