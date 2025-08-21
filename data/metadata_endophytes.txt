@@ -1,0 +1,31 @@
+SampleID	plantpart	site	Treatment	venn	state
+19SWE-EN	endophyte	mine C-78	mine	Active mineII	active
+20SWE-EN	endophyte	mine C-78	mine	Active mineII	active
+21SWE-EN	endophyte	mine C-78	mine	Active mineII	active
+28P-EN	endophyte	mine A	mine	Active mineI	active
+29P-EN	endophyte	mine A	mine	Active mineI	active
+30P-EN	endophyte	mine A	mine	Active mineI	active
+31P-EN	endophyte	mine A	mine	Active mineI	active
+32P-EN	endophyte	mine A	mine	Active mineI	active
+33P-EN	endophyte	mine A	mine	Active mineI	active
+34SWE-EN	endophyte	mine C-78	mine	Active mineII	active
+35SWE-EN	endophyte	mine C-78	mine	Active mineII	active
+36SWE-EN	endophyte	mine C-78	mine	Active mineII	active
+37P-EN	endophyte	mine A	mine	Active mineI	active
+38P-EN	endophyte	mine A	mine	Active mineI	active
+39P-EN	endophyte	mine A	mine	Active mineI	active
+49P-EN	endophyte	mine A	mine	Active mineI	active
+50P-EN	endophyte	mine A	mine	Active mineI	active
+51P-EN	endophyte	mine A	mine	Active mineI	active
+52SWE-EN	endophyte	mine C-78	mine	Active mineII	active
+53SWE-EN	endophyte	mine C-78	mine	Active mineII	active
+54SWE-EN	endophyte	mine C-78	mine	Active mineII	active
+55C19-EN	endophyte	control	control	Control	control
+56C19-EN	endophyte	control	control	Control	control
+57C19-EN	endophyte	control	control	Control	control
+58P-EN	endophyte	mine A	mine	Active mineI	active
+59P-EN	endophyte	mine A	mine	Active mineI	active
+60P-EN	endophyte	mine A	mine	Active mineI	active
+67C19-EN	endophyte	control	control	Control	control
+68C19-EN	endophyte	control	control	Control	control
+69C19-EN	endophyte	control	control	Control	control
